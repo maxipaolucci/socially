@@ -1,8 +1,7 @@
 Parties = new Mongo.Collection('Parties');
 
 if (Meteor.isClient) {
-    angular.module('socially', ['angular-meteor']);
-
+    angular.module('socially', ['angular-meteor', 'ui.router']);
     angular.module('socially').directive('partiesList', function () {
 
         return {
@@ -10,12 +9,22 @@ if (Meteor.isClient) {
             templateUrl: 'parties-list.html',
             controllerAs: 'partiesList',
             controller: function ($scope, $reactive) {
-                    $reactive(this).attach($scope);
-                    this.helpers({
-                        parties: () => {
-                            return Parties.find({});
-                        }
+
+                $reactive(this).attach($scope);
+                this.newParty = {};
+
+                this.helpers({
+                    parties: () => { return Parties.find({}); }
                 });
+
+                this.addParty = () => {
+                    Parties.insert(this.newParty);
+                    this.newParty = {};
+                };
+
+                this.removeParty = (party) => {
+                    Parties.remove({_id: party._id});
+                };
             }
         };
 
